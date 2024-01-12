@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-cloud-k8s-native
+spec:
+  selector:
+    matchLabels:
+      app: spring-cloud-k8s-native
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spring-cloud-k8s-native
+    spec:
+      containers:
+        - name: springkubernetes
+          image: springkubernetesnative
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          envFrom:
+            - secretRef:
+                name: spring-cloud-k8s-native-secret
+                optional: false
+          volumeMounts:
+            - mountPath: /app/config
+              name: spring-config-file
+      volumes:
+        - name: spring-config-file
+          configMap:
+            name: spring-cloud-k8s-native-configmap
+            optional: false
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: spring-cloud-k8s-native
+spec:
+  selector:
+    app: spring-cloud-k8s-native
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-cloud-k8s-native-configmap
+data:
+  application-prod.yml: |-
+    app.config1: "prod_config1"
+    app.secret1: "${APP_SECRET_1}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: spring-cloud-k8s-native-secret
+data:
+  APP_SECRET_1: cHJvZF9zZWNyZXQx
+type: Opaque

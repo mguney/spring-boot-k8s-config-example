@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: spring-cloud-k8s
+
+management:
+  endpoint:
+    env:
+      enabled: true
+      show-values: always
+    info:
+      enabled: true
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: env
+
+app:
+  config1: "default_config1"
+  config2: "default_config2"
+  secret1: "default_secret1"
+  secret2: "default_secret2"

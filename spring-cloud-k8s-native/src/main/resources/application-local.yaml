@@ -1,0 +1,3 @@
+app:
+  config1: "local_config1"
+  secret1: "local_secret1"
